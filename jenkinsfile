@@ -1,8 +1,11 @@
 pipeline {
     agent any
+    tools{
+        nodejs 'NodeJS-LTS'
+    }
 
     environment {
-        APP_NAME = 'todo-jenkins-app'
+        APP_NAME = 'TODO_JENKINS_APP'
     }
 
     stages {
