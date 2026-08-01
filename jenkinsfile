@@ -1,11 +1,11 @@
 pipeline {
     agent any
-    tools{
+    tools {
         nodejs 'NodeJS-LTS'
     }
 
     environment {
-        APP_NAME = 'TODO_JENKINS_APP'
+        APP_NAME = 'todo-jenkins-app'
     }
 
     stages {
@@ -35,9 +35,20 @@ pipeline {
                 echo "App ${env.APP_NAME} built successfully!"
             }
         }
-        stage('Run Application') {
+        
+        stage('5. Deploy App via Docker') {
             steps {
-                sh 'nohup npm start > app.log 2>&1 &'
+                echo 'Building Docker Image...'
+                // Build a docker image out of your app
+                sh "docker build -t ${env.APP_NAME}:latest ."
+                
+                echo 'Deploying Container...'
+                // Stop the old container if it exists so we don't get a port conflict
+                sh "docker stop ${env.APP_NAME}-live || true"
+                sh "docker rm ${env.APP_NAME}-live || true"
+                
+                // Run the new container and map port 3000 to your computer
+                sh "docker run -d --name ${env.APP_NAME}-live -p 3000:3000 ${env.APP_NAME}:latest"
             }
         }        
     }
@@ -45,10 +56,11 @@ pipeline {
     post {
         always {
             echo 'Pipeline Execution Completed.'
-            cleanWs()
+            cleanWs() // This is now safe because the app is safely running inside Docker!
         }
         success {
-            echo '🎉 BUILD SUCCESSFUL!'
+            echo '🎉 BUILD AND DEPLOYMENT SUCCESSFUL!'
+            echo '🚀 Open http://localhost:3000 in your browser to see your app!'
         }
         failure {
             echo '❌ BUILD FAILED!'
