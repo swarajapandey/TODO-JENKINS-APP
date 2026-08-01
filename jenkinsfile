@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'todo-jenkins-app'
+    }
+
+    stages {
+        stage('1. Checkout Code') {
+            steps {
+                echo 'Checking out code from GitHub...'
+                checkout scm
+            }
+        }
+
+        stage('2. Install Dependencies') {
+            steps {
+                echo 'Installing Node.js packages...'
+                sh 'npm install'
+            }
+        }
+
+        stage('3. Run Unit Tests') {
+            steps {
+                echo 'Executing Automated Tests...'
+                sh 'npm test'
+            }
+        }
+
+        stage('4. Build Summary') {
+            steps {
+                echo "App ${env.APP_NAME} built successfully!"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline Execution Completed.'
+            cleanWs()
+        }
+        success {
+            echo '🎉 BUILD SUCCESSFUL!'
+        }
+        failure {
+            echo '❌ BUILD FAILED!'
+        }
+    }
+}

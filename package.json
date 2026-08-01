@@ -1,0 +1,13 @@
+{
+  "name": "todo-jenkins-app",
+  "version": "1.0.0",
+  "description": "Simple To-Do App for Jenkins Pipeline Demo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jenkins To-Do App</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; background: #eef2f3; }
+        .container { max-width: 420px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        ul { list-style: none; padding: 0; }
+        li { padding: 10px; border-bottom: 1px solid #eee; background: #fafafa; margin-bottom: 5px; border-radius: 4px; }
+        input, button { padding: 10px; margin-top: 10px; width: 100%; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc; }
+        button { background: #28a745; color: white; border: none; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #218838; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>My To-Do List</h2>
+        <ul id="todo-list"></ul>
+        <input type="text" id="task-input" placeholder="Enter new task...">
+        <button onclick="addTodo()">Add Task</button>
+    </div>
+    <script>
+        async function fetchTodos() {
+            const res = await fetch('/api/todos');
+            const data = await res.json();
+            const list = document.getElementById('todo-list');
+            list.innerHTML = data.map(t => `<li>${t.task}</li>`).join('');
+        }
+        async function addTodo() {
+            const taskInput = document.getElementById('task-input');
+            if(!taskInput.value.trim()) return;
+            await fetch('/api/todos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task: taskInput.value })
+            });
+            taskInput.value = '';
+            fetchTodos();
+        }
+        fetchTodos();
+    </script>
+</body>
+</html>
