@@ -35,6 +35,18 @@ pipeline {
                 echo "App ${env.APP_NAME} built successfully!"
             }
         }
+        stage( Adding a security scan step){
+            steps{
+                echo "scanning the vulnerabilities in the image"
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity HIGH,CRITICAL --exit-code 0 ${env.APP_NAME}:latest"
+            }
+        }
+        stage(adding an approval before deploy){
+            steps{
+                echo "manual approval required type yes to approve"
+                input message: 'Security scan has passed buddy! do you want to deploy it', ok: 'deploy, to prod'
+            }
+        }
         
         stage('5. Deploy App via Docker') {
             steps {
